@@ -1,0 +1,25 @@
+{
+  "name": "wp-plugin",
+  "private": false,
+  "version": "1.0.0",
+  "description": "Quickly bootstrap your next awesome WordPress plugin with just one command!",
+  "main": "index.js",
+  "bin": "index.js",
+  "homepage": "https://github.com/devhammed/wp-plugin",
+  "keywords": [
+    "wordpress",
+    "create",
+    "generator",
+    "wp",
+    "plugins"
+  ],
+  "author": "Hammed Oyedele <itz.harmid@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "figlet": "^1.2.3",
+    "inquirer": "^6.5.0",
+    "is-semver": "^1.0.9",
+    "stringcase": "^4.3.1"
+  }
+}
