@@ -27,7 +27,7 @@ const README_TEMPLATE = `# %PLUGIN_NAME%
 
 ## Contributors
 
-* %PLUGIN_AUTHOR% (%AUTHOR_EMAIL%)
+* %PLUGIN_AUTHOR% <%AUTHOR_EMAIL%> (%AUTHOR_URI%)
 
 ## License
 
@@ -42,7 +42,6 @@ const STARTER_FILE_TEMPLATE = `<?php
  * Author: %PLUGIN_AUTHOR%
  * Author URI: %AUTHOR_URI%
  * Text Domain: %TEXT_DOMAIN%
- *
  * License: GPL-2.0+
  * License URI: http://www.opensource.org/licenses/gpl-license.php
  */
@@ -76,89 +75,98 @@ namespace %AUTHOR_NAMESPACE%%PLUGIN_NAMESPACE%;
 
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
-  exit;
+    exit;
 }
 
 if ( ! class_exists( '%PLUGIN_NAMESPACE%' ) ) :
 
-class %PLUGIN_NAMESPACE% {
+    class %PLUGIN_NAMESPACE%
+    {
+        private static $instance;
 
-  private static $instance;
+        public static function instance()
+        {
+            if ( ! isset( self::$instance ) && ! ( self::$instance instanceof %PLUGIN_NAMESPACE% ) ) {
+                self::$instance = new %PLUGIN_NAMESPACE%;
+                self::$instance->constants();
+                self::$instance->includes();
+                self::$instance->hooks();
+            }
 
-  public static function instance() {
+            return self::$instance;
+        }
 
-    if ( ! isset( self::$instance ) && ! ( self::$instance instanceof %PLUGIN_NAMESPACE% ) ) {
+        /**
+         * Constants
+         */
+        public function constants()
+        {
+          // Plugin version
+          if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_VERSION' ) ) {
+              define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_VERSION', '%PLUGIN_VERSION%' );
+          }
 
-      self::$instance = new %PLUGIN_NAMESPACE%;
+          // Plugin file
+          if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE' ) ) {
+              define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE', __FILE__ );
+          }
 
-      self::$instance->constants();
-      self::$instance->includes();
-      self::$instance->hooks();
+          // Plugin basename
+          if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_BASENAME' ) ) {
+              define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_BASENAME', plugin_basename( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE ) );
+          }
+
+          // Plugin directory path
+          if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_DIR_PATH' ) ) {
+              define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_DIR_PATH', trailingslashit( plugin_dir_path( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE )  ) );
+          }
+
+          // Plugin directory URL
+          if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_DIR_URL' ) ) {
+              define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_DIR_URL', trailingslashit( plugin_dir_url( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE )  ) );
+          }
+      }
+
+        /**
+         * Action/filter hooks
+         */
+        public function hooks()
+        {
+            register_activation_hook( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE, array( $this, 'activate' ) );
+            register_deactivation_hook( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE, array( $this, 'deactivate' ) );
+            add_action('wp_enqueue_scripts', array($this, 'scripts'));
+            add_action('wp_enqueue_styles', array($this, 'styles'));
+        }
+
+        /**
+         * Enqueue Scripts
+         */
+        public function scripts() {}
+
+        /**
+         * Enqueue Styles
+        */
+        public function styles()
+        { }
+
+        /**
+         * Include/Require PHP files
+         */
+        public function includes()
+        { }
+
+        /**
+         * Run on plugin activation
+         */
+        public function activate()
+        { }
+
+        /**
+         * Run on plugin de-activation
+        */
+        public function deactivate()
+        { }
     }
-
-    return self::$instance;
-  }
-
-  /**
-   * Constants
-   */
-  public function constants() {
-
-    // Plugin version
-    if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_VERSION' ) ) {
-      define( '%PLUGIN_CONSTANT_PREFIX%_VERSION', '0.1.0' );
-    }
-
-    // Plugin file
-    if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE' ) ) {
-      define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE', __FILE__ );
-    }
-
-    // Plugin basename
-    if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_BASENAME' ) ) {
-      define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_BASENAME', plugin_basename( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE ) );
-    }
-
-    // Plugin directory path
-    if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_DIR_PATH' ) ) {
-      define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_DIR_PATH', trailingslashit( plugin_dir_path( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE )  ) );
-    }
-
-    // Plugin directory URL
-    if ( ! defined( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_DIR_URL' ) ) {
-      define( '%PLUGIN_CONSTANT_PREFIX%_PLUGIN_DIR_URL', trailingslashit( plugin_dir_url( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE )  ) );
-    }
-  }
-
-  /**
-   * Action/filter hooks
-   */
-  public function hooks() {
-    register_activation_hook( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE, array( $this, 'activate' ) );
-    register_deactivation_hook( %PLUGIN_CONSTANT_PREFIX%_PLUGIN_FILE, array( $this, 'deactivate' ) );
-    add_action('init', array( $this, 'enqueue' ));
-  }
-
-  /**
-   * Enqueue scripts and styles
-  */
-  public function enqueue() {}
-
-  /**
-   * Include/Require PHP files
-   */
-  public function includes() {}
-
-  /**
-   * Run on plugin activation
-   */
-  public function activate() {}
-
-  /**
-   * Run on plugin de-activation
-   */
-  public function deactivate() {}
-}
 
 endif;
 
@@ -289,6 +297,13 @@ inquirer
       default: 'empty',
       filter: canBeEmpty,
       message: "Author's Email Address:"
+    },
+    {
+      type: 'input',
+      name: 'authorURL',
+      default: 'empty',
+      filter: canBeEmpty,
+      message: "Author's URL:"
     },
     {
       type: 'input',
