@@ -1,7 +1,7 @@
 {
   "name": "wp-plugin",
   "private": false,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Quickly bootstrap your next awesome WordPress plugin with just one command!",
   "main": "index.js",
   "bin": "index.js",
