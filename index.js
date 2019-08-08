@@ -266,16 +266,8 @@ inquirer
       default: '0.0.1',
       message: 'Plugin Version:',
       filter: canBeEmpty,
-      validate: function (input) {
-        if (isSemver(input)) {
-          return true
-        } else {
-          console.log(
-            chalk.red(' Error: must be valid semver number (e.g. 0.0.1)')
-          )
-          return false
-        }
-      }
+      validate: input =>
+        isSemver(input) || 'Error: must be valid semver number (e.g. 0.0.1)'
     },
     {
       type: 'input',
