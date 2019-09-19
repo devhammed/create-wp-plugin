@@ -1,0 +1,17 @@
+name: create-wp-plugin
+version: git
+summary: Quickly bootstrap your next awesome WordPress plugin with just one command!
+description: |
+  Change directory into your project /wp-content/plugins and
+  run create-wp-plugin command in your terminal and answer the questions and boom,
+  it will auto-magically generate a WordPress plugin for you without stress!
+confinement: devmode
+base: core18
+parts:
+  create-wp-plugin:
+    plugin: nodejs
+    source: .
+
+apps:
+  create-wp-plugin:
+    command: create-wp-plugin
